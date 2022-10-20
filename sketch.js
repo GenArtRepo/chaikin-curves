@@ -94,7 +94,7 @@ function draw() {
     line(chai[i].x, chai[i].y, chai[j].x, chai[j].y);
   }
 
-  noLoop();
+  // noLoop();
   
  
 }

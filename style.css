@@ -1,0 +1,10 @@
+html,body { 
+  height:400px; 
+  width: 720px;
+  overflow: hidden;
+}
+
+.sentences {
+  font-size: 12px;
+  color: rgba(135, 135, 135, 0.568);
+}

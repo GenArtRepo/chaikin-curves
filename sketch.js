@@ -29,6 +29,7 @@ var settings = {
 
 function gui() {
   var g = new dat.GUI();
+  g.width = 150;
   g.add(settings, "vertices", 3, settings.max_verts).step(1);
   g.add(settings, "res", 1, 6).step(1);
 }

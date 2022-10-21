@@ -20,9 +20,9 @@
 */
 
 var settings = {
-  vertices: 5,
-  max_verts: 20,
-  res: 3
+  vertices: 20,
+  max_verts: 50,
+  res: 4
   // first_ratio:0.25,
   // last_ratio:0.75
 };
@@ -55,7 +55,7 @@ function chaikin(points) {
     let dist_x = b.x - a.x;
     let dist_y = b.y - a.y;
 
-    // define vertives C and D
+    // define vertices C and D
     let c = { x: a.x + dist_x * .25, y: a.y + dist_y * .25 };
     let d = { x: a.x + dist_x * .75, y: a.y + dist_y * .75 };
 
@@ -91,12 +91,15 @@ function setup() {
   // polygon generated using polar coordinates
   // radii stores the distance between each vertex and the centre of the canvas
   for (let i = 0; i < settings.max_verts; i++) {
-    radii.push(random() * (width / 2 - width / 3) + width / 3);
+    radii.push(random() * (width / 2 - width / 3) + width / 4);
   }
 }
 
-function draw() {
+let yoff = 0.0;
+let all_polys = [];
 
+function draw() {
+  let xoff = 0.0;
   // refresh background
   background(255, 247, 230);
 
@@ -104,35 +107,58 @@ function draw() {
   let a = 0; // angle of first vertex
   let s = settings.vertices; // number of vertices
   let polygon = []; // array to contain polygon vertices
+  
 
   // create polygon
   for (let i = 0; i < s; i++) {
-    let x = width / 2 + radii[i] * Math.cos(a);
-    let y = height / 2 + radii[i] * Math.sin(a);
+    // let x = width / 2 + radii[i] * Math.cos(a);
+    // let y = height / 2 + radii[i] * Math.sin(a);
+    let r = radii[i] + (width/4 * (noise(xoff, yoff) * 2 - 1));
+    let x = width / 2 + r * Math.cos(a);
+    let y = height / 2 + r * Math.sin(a);
     polygon.push({ x: x, y: y });
     a += TWO_PI / s; // update angle
+    xoff+=0.1;
+  }
+  yoff+=0.005;
+  let poly_copy = [...polygon];
+  
+  if(all_polys.length < 100){
+    all_polys.push(poly_copy);
+  }else{
+    all_polys.shift();
+    all_polys.push(poly_copy);
   }
 
   // create smooth polygon
-  let chai = chaikin2(polygon, settings.res);
+  for(let p of all_polys){
+    let chai = chaikin2(p, settings.res);
+    let n = noise(2*xoff);
+    // let red = 128 + (255 * noise(xoff,yoff) * 2 - 1);
+    // let green = 128 + (255 * noise(xoff,yoff) * 2 - 1);
+    // // let blue = 128 + (255 * noise(xoff,yoff) * 2 - 1);
+    // let c = color(red, green, blue, 7)
+    //draw smooth polygon
+    stroke(360 * n, 100, 360 * n,  7);
+    // stroke(red, 7);
+    strokeWeight(2);
+    for (let i = 0; i < chai.length; i++) {
+      let j = (i + 1) % chai.length;
+      line(chai[i].x, chai[i].y, chai[j].x, chai[j].y);
+  }
+
+  }
 
   //draw control polygon
-  stroke(255,0,0);
-  strokeWeight(1);
-  for (let i = 0; i < polygon.length; i++) {
-    let j = (i + 1) % polygon.length;
-    line(polygon[i].x, polygon[i].y, polygon[j].x, polygon[j].y);
-  }
+  // stroke(255,0,0);
+  // strokeWeight(1);
+  // for (let i = 0; i < polygon.length; i++) {
+  //   let j = (i + 1) % polygon.length;
+  //   line(polygon[i].x, polygon[i].y, polygon[j].x, polygon[j].y);
+  // }
 
-  //draw smooth polygon
-  stroke(0);
-  strokeWeight(2);
-  for (let i = 0; i < chai.length; i++) {
-    let j = (i + 1) % chai.length;
-    line(chai[i].x, chai[i].y, chai[j].x, chai[j].y);
-  }
-
-  // noLoop();
   
+
+  // xoff+=0.001;
  
 }
